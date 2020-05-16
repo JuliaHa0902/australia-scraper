@@ -16,6 +16,11 @@ class Scraper:
         self.load_css_class = load_css_class
         self.headline_css_class = headline_css_class
 
+    def remove_duplicate(self, headlines):
+        """Remove duplicate headlines by change to a set type"""
+        headlines = {x for x in headlines}
+        return headlines
+
     def scraper(self):
         """Scraping CNN Australia latest news"""
         option = webdriver.ChromeOptions()
@@ -39,16 +44,18 @@ class Scraper:
 
         #find the latest news by find_elements_by_xpath
         headline_element = browser.find_elements_by_xpath(self.headline_css_class)
-        self.headline = {x.text for x in headline_element}
+        self.headline = [x.text for x in headline_element]
+        self.headline = self.remove_duplicate(self.headline)
 
     def print_headline(self):
         """Print the headline"""
         if len(self.headline) == 0:
             print("None")
-        else:
-            print("Headlines:")
-            for title in self.headline:
-                print(title)
+            return "None"
+        print("Headlines:")
+        for title in self.headline:
+            print(title)
+        return self.headline
 
 if __name__ == "__main__":
     cnn_headline = Scraper("https://www.cnn.com/australia", "//img[@class='media__image media__image--responsive']", "//h3[@data-analytics='Australia latest_list-xs_article_']")
